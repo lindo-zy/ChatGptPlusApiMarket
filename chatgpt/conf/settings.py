@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
 
     # chatgpt的api，后面写成配置文件使用，最好简单编码下
-    CHAT_GPT_API_KEY = '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'
+    CHAT_GPT_API_KEY = ''
     # 生成的链接地址
 
 
