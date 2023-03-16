@@ -3,6 +3,8 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from chatgpt.core.router import APIRouter
+
 
 def creat_app():
     app = FastAPI()
@@ -14,4 +16,6 @@ def creat_app():
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    router = APIRouter()
+    app.include_router(router)
     return app
