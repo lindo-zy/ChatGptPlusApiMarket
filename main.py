@@ -8,8 +8,9 @@ app = creat_app()
 if __name__ == '__main__':
     import uvicorn
 
-    uvicorn.run(app=app,
+    uvicorn.run(app='main:app',
                 host='0.0.0.0',
-                port=809,
-                debug=True,
-                reload=True)
+                port=8090,
+                # debug=True,
+                reload=True
+                )

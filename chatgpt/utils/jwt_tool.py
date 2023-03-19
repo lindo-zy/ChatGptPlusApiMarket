@@ -6,7 +6,7 @@ from typing import Any, Union
 
 import jwt
 
-from chatgpt.conf.settings import settings
+from chatgpt.conf.mysettings import settings
 
 
 class JwtTool:
@@ -20,8 +20,8 @@ class JwtTool:
     ) -> str:
         """
         生成jwt
-        :param subject:
-        :param expires_delta:
+        :param subject:用户账号，可以用微信号生成
+        :param expires_delta:默认一个月有效
         :return:
         """
         if expires_delta:
@@ -35,7 +35,7 @@ class JwtTool:
         return encoded_jwt
 
     @staticmethod
-    def check_access_token(jwt_token: str) -> bool:
+    def check_access_token(jwt_token: str) -> dict:
         """
         验证token
         :param jwt_token:
@@ -43,19 +43,18 @@ class JwtTool:
         """
         try:
             decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=settings.ALGORITHM)
-            print(decoded_token)
-            return True
+            return decoded_token
         except jwt.ExpiredSignatureError:
             print("Token has expired")
         except jwt.InvalidTokenError:
             print("Invalid token")
         except Exception as e:
             print(e)
-        return False
+        return {}
 
 
 if __name__ == '__main__':
-    # print(JwtVerify.create_access_token('123'))
+    print(JwtTool.create_access_token('123'))
 
     print(JwtTool.check_access_token(
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE1NjU0MDksInN1YiI6IjEyMyJ9.LlP7LrRMsMGTRy_N-mQC1XEzdooU2iJ9Qad8HKOopcI'))
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4MDkzNzYsInN1YiI6IjEyMyJ9.aRASzLH1Gk4nTtizQE5C_pZ7lCU9yPcTCk-_C2p8TfE'))
