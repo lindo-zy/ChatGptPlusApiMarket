@@ -4,6 +4,6 @@
 from pydantic import BaseModel
 
 
-class RequestOpenaiSchema(BaseModel):
-    token: str
-    prompt: str
+class RequestSchema(BaseModel):
+    # jwt验证
+    jwt_token: str

@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 
 from datetime import datetime, timedelta
-from typing import Any, Union
 
 import jwt
 
@@ -16,21 +15,29 @@ class JwtTool:
 
     @staticmethod
     def create_access_token(
-            subject: Union[str, Any], expires_delta: timedelta = None
+            username: str,
+            num: int
     ) -> str:
+
         """
-        生成jwt
-        :param subject:用户账号，可以用微信号生成
-        :param expires_delta:默认一个月有效
+        生成jwt,免费用户的jwt有效时间为1天，付费用户30天
+        :param num:
+        :param username: 用户名
         :return:
-        """
-        if expires_delta:
-            expire = datetime.utcnow() + expires_delta
+            """
+        # 创建表示当前日期的datetime对象
+        today = datetime.today()
+        # 格式化日期并输出
+        cur_date = today.strftime("date:'%Y-%m-%d'")
+        if len(username) == 32:
+            expire = datetime.utcnow() + timedelta(
+                minutes=settings.NORMAL_ACCESS_TOKEN_EXPIRE_MINUTES
+            )
         else:
             expire = datetime.utcnow() + timedelta(
                 minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
             )
-        to_encode = {"exp": expire, "sub": str(subject)}
+        to_encode = {"exp": expire, "username": username, 'num': str(num), 'date': cur_date}
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
         return encoded_jwt
 
@@ -54,7 +61,4 @@ class JwtTool:
 
 
 if __name__ == '__main__':
-    print(JwtTool.create_access_token('123'))
-
-    print(JwtTool.check_access_token(
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4MDkzNzYsInN1YiI6IjEyMyJ9.aRASzLH1Gk4nTtizQE5C_pZ7lCU9yPcTCk-_C2p8TfE'))
+    pass

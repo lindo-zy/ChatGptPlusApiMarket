@@ -4,3 +4,4 @@ fastapi~=0.81.0
 starlette~=0.19.1
 uvicorn~=0.18.3
 PyJWT~=2.6.0
+SQLAlchemy~=1.4.41

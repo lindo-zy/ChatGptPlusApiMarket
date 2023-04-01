@@ -3,61 +3,41 @@
 
 from fastapi import APIRouter
 
-from chatgpt.handle.token import token_manager
-from chatgpt.schemas.services import RequestOpenaiSchema
+from chatgpt.db import db_session
+from chatgpt.models.users import User
+from chatgpt.schemas.services import RequestSchema
 from chatgpt.utils.jwt_tool import JwtTool
 
 app = APIRouter(prefix='/service')
 
 
-#
-# prompt = "帮我写一个python的二叉树"
-# import os
-#
-# os.environ['HTTP_PROXY'] = 'http://localhost:1081'
-# os.environ['HTTPS_PROXY'] = 'http://localhost:1081'
-#
-#
-# def use_api(prompt):
-#     response = openai.ChatCompletion.create(
-#         model='gpt-3.5-turbo',
-#         message=[{'role': 'user',
-#                   'content': prompt}]
-#     )
-#     return response['choice'][0]['message']['content']
-#
-#
-# r = use_api(prompt)
-# print(r)
-
-# 用户通过这个接口调用真实的open api
-# 1.限流，5s调用一次
-# 2.每次调用时校验token和次数
-# 3.
-
-
-@app.post('/request_openai/')
-async def request_openai(item: RequestOpenaiSchema):
+@app.post('/request')
+async def request(item: RequestSchema):
     """
-    使用token访问openapi接口
+    请求验证接口
+    :param item:
     :return:
     """
-    if not JwtTool.check_access_token(item.token):
-        return {'message': 'token异常！', 'status': 'error'}
-    if not token_manager.verify_token(item.token):
-        return {'message': 'token异常！', 'status': 'error'}
+    # 这个接口在api调用成功后再触发，否则api未访问成功也扣费，逻辑有问题
     try:
-        # openai.api_key = settings.CHAT_GPT_API_KEY
-        # prompt = item.prompt
-        # response = openai.ChatCompletion.create(
-        #     model='gpt-3.5-turbo',
-        #     message=[{'role': 'user',
-        #               'content': prompt}]
-        #     # message=message
-        # )
-        # r = response['choice'][0]['message']['content']
-        r = '123'
-        return {'content': r, "message": 'gpt-3.5-turbo', 'status': 'success'}
+        info = JwtTool.check_access_token(item.jwt_token)
+        if info:
+            username = info['username']
+            # 查询数据库剩余次数
+            with db_session as session:
+                rows = session.query(User).filter_by(username=username).with_for_update().limit(1).all()
+                # 如果有这个用户，更新次数
+                if rows:
+                    remaining_count = rows[0].remaining_count
+                    if remaining_count - 1 < 0:
+                        return {'message': '用户剩余次数为0！', 'status': 'error'}
+                    else:
+                        rows[0].remaining_count -= 1
+                        session.commit()
+                        return {'message': 'request处理成功！', 'status': 'success'}
+                else:
+                    # 没有这个用户
+                    return {'message': 'request接口异常！', 'status': 'error'}
+        return {'message': 'request接口异常！', 'status': 'error'}
     except Exception as e:
-        print(e)
-    return {'message': '接口访问异常', 'status': 'error'}
+        return {'message': f'request接口异常！{e}', 'status': 'error'}
