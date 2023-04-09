@@ -24,7 +24,7 @@ class MySettings(BaseSettings):
     # 数据库配置
     DATABASE = 'chatgpt'
     DB_HOST = '127.0.0.1'
-    DB_USERNAME = 'ROOT'
+    DB_USERNAME = 'root'
     DB_PASSWORD = '123456'
 
 

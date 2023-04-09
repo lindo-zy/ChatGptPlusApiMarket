@@ -83,6 +83,12 @@ async def verify(item: VerifySchema):
                 }
                 cur_num = num_map[item.secret_key]
                 username = uuid.uuid4()
+                # 写入到数据库
+                rows = session.query(User).filter_by(username=username).with_for_update().all()
+                if not rows:
+                    new_object = User(username=username, remaining_count=cur_num)
+                    session.add(new_object)
+                    session.commit()
                 jwt = JwtTool.create_access_token(username=str(username), num=cur_num)
                 return {'message': f'免费用户:{username}添加成功', 'status': 'success', 'token': jwt}
             else:
