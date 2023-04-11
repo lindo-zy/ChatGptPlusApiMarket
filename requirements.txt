@@ -6,3 +6,6 @@ uvicorn~=0.18.3
 PyJWT~=2.6.0
 SQLAlchemy~=1.4.41
 PyMySQL~=1.0.2
+loguru~=0.6.0
+httpx~=0.23.0
+tiktoken~=0.3.3

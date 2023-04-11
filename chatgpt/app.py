@@ -44,5 +44,6 @@ def creat_app():
         response = await call_next(request)
         return response
 
+    # 添加路由
     app.include_router(api_router)
     return app
