@@ -141,6 +141,11 @@ async def chat_process(data: ChatProcessRequest, x_token: str = Header(...)):
         return {'message': f'request接口异常！{e}', 'status': 'error'}
 
 
+@app.post('/')
+async def request():
+    pass
+
+
 @app.post("/session", response_model=SessionResponse, summary="")
 async def session():
     """
