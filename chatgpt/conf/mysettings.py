@@ -25,6 +25,7 @@ class MySettings(BaseSettings):
     DATABASE = 'chatgpt'
     DB_HOST = '127.0.0.1'
     DB_USERNAME = 'root'
+    # DB_PASSWORD = '123456'
     DB_PASSWORD = ''
 
     # openai的秘钥
@@ -32,6 +33,9 @@ class MySettings(BaseSettings):
 
     # 后台每日最大访问次数
     MAX_REQUEST = 10000
+
+    # 微信号
+    WEIXIN_CODE = 'poxiaozy_sub'
 
 
 settings = MySettings()
