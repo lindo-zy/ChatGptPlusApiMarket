@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 import asyncio
 import datetime
+import random
 import uuid
 
 import openai
@@ -15,6 +16,7 @@ from chatgpt.db import db_session, Session
 from chatgpt.message_bodys import *
 from chatgpt.models.users import SecretKey, User
 from chatgpt.schemas.items import VerifySchema
+from chatgpt.schemas.users import GenKeySchema
 from chatgpt.util import num_tokens_from_messages, get_proxies
 from chatgpt.utils.jwt_tool import JwtTool
 
@@ -108,15 +110,13 @@ async def chat_process2(data: ChatProcessRequest, db: Session = Depends(crud.get
     return StreamingResponse(content=generate(), media_type="application/octet-stream")
 
 
-@app.post('/chat-process')
-async def chat_process(data: ChatProcessRequest, x_token: str = Header(...)):
+@app.post('/request')
+async def request(x_token: str = Header(...)):
     """
-    调用openai接口，返回流式响应，实现打字机效果
-    :param data:
+    调用openai前查询当前用户是否还有剩余次数
     :param x_token:
     :return:
     """
-    # 这个接口在api调用成功后再触发，否则api未访问成功也扣费，逻辑有问题
     try:
         info = JwtTool.check_access_token(x_token)
         if info:
@@ -127,42 +127,8 @@ async def chat_process(data: ChatProcessRequest, x_token: str = Header(...)):
                 # 如果有这个用户，更新次数
                 if rows:
                     remaining_count = rows[0].remaining_count
-                    if remaining_count - 1 < 0:
-                        return {'message': f'次数已用完，添加微信获取更多次数：{settings.WEIXIN_CODE}', 'status': 'error'}
-                    else:
-                        rows[0].remaining_count -= 1
-                        session.commit()
+                    if remaining_count > 0:
                         return {'message': 'request处理成功！', 'status': 'success'}
-                else:
-                    # 没有这个用户
-                    return {'message': 'request接口异常！', 'status': 'error'}
-        return {'message': 'request接口异常！', 'status': 'error'}
-    except Exception as e:
-        return {'message': f'request接口异常！{e}', 'status': 'error'}
-
-
-@app.post('/request')
-async def request(x_token: str = Header(...)):
-    # 这个接口在api调用成功后再触发，否则api未访问成功也扣费，逻辑有问题
-    try:
-        info = JwtTool.check_access_token(x_token)
-        if info:
-            username = info['username']
-            # 查询数据库剩余次数
-            with db_session as session:
-                rows = session.query(User).filter_by(username=username).with_for_update().limit(1).all()
-                # 如果有这个用户，更新次数
-                if rows:
-                    remaining_count = rows[0].remaining_count
-                    if remaining_count - 1 < 0:
-                        return {'message': '用户剩余次数为0！', 'status': 'error'}
-                    else:
-                        rows[0].remaining_count -= 1
-                        session.commit()
-                        return {'message': 'request处理成功！', 'status': 'success'}
-                else:
-                    # 没有这个用户
-                    return {'message': 'request接口异常！', 'status': 'error'}
         return {'message': 'request接口异常！', 'status': 'error'}
     except Exception as e:
         return {'message': f'request接口异常！{e}', 'status': 'error'}
@@ -243,3 +209,30 @@ async def verify(item: VerifySchema):
                 return {'message': "非法秘钥！", 'status': 'error'}
     except Exception as e:
         return {'message': f'verify接口异常：{e}', 'status': 'error'}
+
+
+@app.post('/gen_key')
+async def gen_key(item: GenKeySchema):
+    """
+    更新秘钥
+    :param item:
+    :return:
+    """
+    if item.admin_token in settings.ADMIN_TOKEN_LIST:
+        # 更新数据库中的秘钥
+        with db_session as session:
+            rows = session.query(SecretKey).with_for_update().limit(1).all()
+            # 随机生成6位数
+            # (100000, 466665), (466666, 833331), (833332, 999999)
+            normal_key = random.randint(100000, 466665)
+            group_key = random.randint(466666, 833331)
+            vip_key = random.randint(833332, 999999)
+            for row in rows:
+                row.normal_key = normal_key
+                row.group_key = group_key
+                row.vip_key = vip_key
+            session.commit()
+            return {'message': '秘钥更新完成！', 'status': 'success', 'normal_key': normal_key, 'group_key': group_key,
+                    'vip_key': vip_key}
+
+    return {'message': '无效的秘钥！', 'status': 'error'}

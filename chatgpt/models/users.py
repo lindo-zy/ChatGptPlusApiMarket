@@ -33,3 +33,14 @@ class SecretKey(Base):
     group_key = Column(String(255), nullable=False)
     # 3类key,星球的key
     vip_key = Column(String(255), nullable=False)
+
+
+class Counter(Base):
+    """
+    统计次数
+    """
+    __tablename__ = 'counter'
+    # 自增id
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    # 次数
+    count = Column(Integer, nullable=False)

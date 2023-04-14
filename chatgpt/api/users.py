@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
-import random
 import uuid
 
 from fastapi import APIRouter
@@ -8,7 +7,7 @@ from fastapi import APIRouter
 from chatgpt.conf.mysettings import settings
 from chatgpt.db import db_session
 from chatgpt.models.users import User, SecretKey
-from chatgpt.schemas.users import RegisterVipSchema, LoginSchema, QuerySchema, VerifySchema, GenKeySchema
+from chatgpt.schemas.users import RegisterVipSchema, LoginSchema, QuerySchema, VerifySchema
 from chatgpt.utils.jwt_tool import JwtTool
 
 app = APIRouter(prefix='/user')
@@ -114,30 +113,3 @@ async def query(item: QuerySchema):
                 return {'message': '剩余次数查询成功！', 'num': num, 'status': 'success'}
 
     return {'message': '查询接口异常！', 'status': 'error'}
-
-
-@app.post('/gen_key')
-async def gen_key(item: GenKeySchema):
-    """
-    更新秘钥
-    :param item:
-    :return:
-    """
-    if item.admin_token in settings.ADMIN_TOKEN_LIST:
-        # 更新数据库中的秘钥
-        with db_session as session:
-            rows = session.query(SecretKey).with_for_update().limit(1).all()
-            # 随机生成6位数
-            # (100000, 466665), (466666, 833331), (833332, 999999)
-            normal_key = random.randint(100000, 466665)
-            group_key = random.randint(466666, 833331)
-            vip_key = random.randint(833332, 999999)
-            for row in rows:
-                row.normal_key = normal_key
-                row.group_key = group_key
-                row.vip_key = vip_key
-            session.commit()
-            return {'message': '秘钥更新完成！', 'status': 'success', 'normal_key': normal_key, 'group_key': group_key,
-                    'vip_key': vip_key}
-
-    return {'message': '无效的秘钥！', 'status': 'error'}
