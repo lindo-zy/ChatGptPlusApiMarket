@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from starlette.middleware.cors import CORSMiddleware
 
 from chatgpt.core.router import api_router
@@ -33,8 +33,8 @@ def creat_app():
         if client_host in ip_access_time and client_host not in ['127.0.0.1']:
             last_access_time = ip_access_time[client_host]
             time_since_last_access = datetime.now() - last_access_time
-            if time_since_last_access > timedelta(seconds=0.5):
-                raise HTTPException(status_code=429, detail="Too many requests")
+            # if time_since_last_access > timedelta(seconds=0.5):
+            #     raise HTTPException(status_code=429, detail="Too many requests")
 
         # 更新IP地址的最近一次访问时间，并将其加入字典
         ip_access_time[client_host] = datetime.now()
