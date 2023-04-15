@@ -33,7 +33,7 @@ def creat_app():
         if client_host in ip_access_time and client_host not in ['127.0.0.1']:
             last_access_time = ip_access_time[client_host]
             time_since_last_access = datetime.now() - last_access_time
-            if time_since_last_access < timedelta(seconds=0.5):
+            if time_since_last_access > timedelta(seconds=0.5):
                 raise HTTPException(status_code=429, detail="Too many requests")
 
         # 更新IP地址的最近一次访问时间，并将其加入字典
