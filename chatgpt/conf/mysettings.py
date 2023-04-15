@@ -31,8 +31,8 @@ class MySettings(BaseSettings):
     DATABASE = 'chatgpt'
     DB_HOST = '127.0.0.1'
     DB_USERNAME = 'root'
-    DB_PASSWORD = '123456'
-    # DB_PASSWORD = ''
+    # DB_PASSWORD = '123456'
+    DB_PASSWORD = 'P@ssw0rd'
 
     # openai的秘钥
     OPENAI_API_KEY = '123'
