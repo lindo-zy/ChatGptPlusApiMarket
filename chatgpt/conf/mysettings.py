@@ -32,7 +32,7 @@ class MySettings(BaseSettings):
     DB_HOST = '127.0.0.1'
     DB_USERNAME = 'root'
     # DB_PASSWORD = '123456'
-    DB_PASSWORD = 'P@ssw0rd'
+    DB_PASSWORD = 'P0ssw0rd'
 
     # openai的秘钥
     OPENAI_API_KEY = '123'
