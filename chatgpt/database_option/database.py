@@ -1,17 +1,14 @@
 # 数据库创建
-from pathlib import Path
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-database_dir = Path(__file__).parent.parent / "database"
-database_dir.mkdir(parents=True, exist_ok=True)
+from chatgpt.conf.mysettings import settings
 
-database_file = database_dir / "chatgpt.db"
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{database_file.as_posix()}"
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(
+    f'mysql+pymysql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOST}/{settings.DATABASE}')
+Session = sessionmaker(bind=engine)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

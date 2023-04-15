@@ -1,6 +1,12 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
+import os
+
+from dotenv import load_dotenv
 from pydantic import BaseSettings
+
+# 加载.env文件中的环境变量
+load_dotenv('.env')
 
 
 class MySettings(BaseSettings):
@@ -25,17 +31,16 @@ class MySettings(BaseSettings):
     DATABASE = 'chatgpt'
     DB_HOST = '127.0.0.1'
     DB_USERNAME = 'root'
-    # DB_PASSWORD = '123456'
-    DB_PASSWORD = ''
+    DB_PASSWORD = '123456'
+    # DB_PASSWORD = ''
 
     # openai的秘钥
     OPENAI_API_KEY = '123'
-
     # 后台每日最大访问次数
     MAX_REQUEST = 10000
 
     # 微信号
-    WEIXIN_CODE = 'poxiaozy_sub'
+    WEIXIN_CODE = os.getenv('WEIXIN_CODE')
 
 
 settings = MySettings()

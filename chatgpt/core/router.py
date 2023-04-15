@@ -2,11 +2,10 @@
 # -*- coding:utf-8 -*-
 from fastapi import APIRouter
 
-from chatgpt.api import services, users, items
+from chatgpt.api import users, items
 from chatgpt.db import create_all
 
 api_router = APIRouter()
-api_router.include_router(services.app, tags=['services'])
 api_router.include_router(items.app, tags=['items'])
 api_router.include_router(users.app, tags=['users'])
 

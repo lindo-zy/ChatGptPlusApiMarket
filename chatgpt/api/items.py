@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 import asyncio
 import datetime
+import os
 import random
 import uuid
 
@@ -16,7 +17,7 @@ from chatgpt.db import db_session, Session
 from chatgpt.message_bodys import *
 from chatgpt.models.users import SecretKey, User
 from chatgpt.schemas.items import VerifySchema
-from chatgpt.schemas.users import GenKeySchema
+from chatgpt.schemas.users import GenKeySchema, NodeToken
 from chatgpt.util import num_tokens_from_messages, get_proxies
 from chatgpt.utils.jwt_tool import JwtTool
 
@@ -25,8 +26,12 @@ app = APIRouter()
 
 @app.post('/chat-process2')
 async def chat_process2(data: ChatProcessRequest, db: Session = Depends(crud.get_db)):
-    if not data.prompt:
-        return "Message can't be empty."
+    """
+    chatGpt对话请求
+    :param data:
+    :param db:
+    :return:
+    """
     chat_response = ChatProcessResponse()
     # 配置对话内容
     messages = []
@@ -117,6 +122,7 @@ async def request(x_token: str = Header(...)):
     :param x_token:
     :return:
     """
+    # return {'message': f'request接口异常!', 'status': 'error'}
     try:
         info = JwtTool.check_access_token(x_token)
         if info:
@@ -236,3 +242,16 @@ async def gen_key(item: GenKeySchema):
                     'vip_key': vip_key}
 
     return {'message': '无效的秘钥！', 'status': 'error'}
+
+
+@app.post('/openai')
+async def openai_key(item: NodeToken):
+    """
+    传递openai的秘钥给node
+    :param item:
+    :return:
+    """
+    if item.token not in ['openai']:
+        return {'message': '非法token', 'status': 'error'}
+    key = os.getenv('OPENAI_KEY')
+    return {'message': '获取key', 'status': 'success', 'apiKey': key}

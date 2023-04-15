@@ -11,10 +11,8 @@ from chatgpt.core.router import api_router
 # 存储IP地址和最近一次访问时间的字典
 ip_access_time: Dict[str, datetime] = {}
 
-
 def creat_app():
     # 在线部署时，关闭docs_url
-    # app = FastAPI(docs_url=None)
     app = FastAPI()
     # 添加中间件，处理跨域问题
     app.add_middleware(

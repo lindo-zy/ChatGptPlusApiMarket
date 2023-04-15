@@ -33,3 +33,7 @@ class QuerySchema(BaseModel):
 class GenKeySchema(BaseModel):
     # 管理员秘钥
     admin_token: str
+
+
+class NodeToken(BaseModel):
+    token: str
