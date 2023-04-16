@@ -6,40 +6,37 @@ from dotenv import load_dotenv
 from pydantic import BaseSettings
 
 # 加载.env文件中的环境变量
-load_dotenv('.env')
+if not load_dotenv('dev.env'):
+    load_dotenv('.env')
 
 
 class MySettings(BaseSettings):
-    SECRET_KEY: str = 'chatgpt1'
-    ALGORITHM: str = 'HS256'
+    SECRET_KEY: str = os.getenv('SECRET_KEY')
+    ALGORITHM: str = os.getenv('ALGORITHM')
+
     # 60 minutes * 24 hours * 30 days = 30 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
     # 1天过期
     NORMAL_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
     # 管理员的token配置
-    ADMIN_TOKEN_LIST = ['coda', 'zy']
+    ADMIN_TOKEN_LIST = os.getenv("ADMIN_TOKEN_LIST")
     # 免费次数配置
     # 白嫖次数
-    NORMAL_NUM = 10
+    NORMAL_NUM = os.getenv("NORMAL_NUM")
     # 加群增加的次数
-    GROUP_NUM = 50
+    GROUP_NUM = os.getenv("GROUP_NUM")
     # 加入星球的次数
-    VIP_NUM = 100
+    VIP_NUM = os.getenv("VIP_NUM")
 
     # 数据库配置
-    DATABASE = 'chatgpt'
-    # DB_HOST = '127.0.0.1'
-    DB_HOST = '123.60.179.74'
-    DB_USERNAME = 'root'
-    # DB_PASSWORD = '123456'
-    DB_PASSWORD = 'p0ssw0rd'
-    # DB_PASSWORD = ''
+    DATABASE = os.getenv("DATABASE")
+    DB_HOST = os.getenv("DB_HOST")
+    DB_USERNAME = os.getenv("DB_USERNAME")
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-    # openai的秘钥
-    OPENAI_API_KEY = '123'
     # 后台每日最大访问次数
-    MAX_REQUEST = 10000
+    MAX_REQUEST = os.getenv("MAX_REQUEST")
 
     # 微信号
     WEIXIN_CODE = os.getenv('WEIXIN_CODE')

@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
+import os
 from datetime import datetime
 from typing import Dict
 
@@ -13,8 +14,11 @@ ip_access_time: Dict[str, datetime] = {}
 
 
 def creat_app():
-    # 在线部署时，关闭docs_url
-    app = FastAPI()
+    # 在线部署时，关闭docs_url  
+    if os.getenv("DEV_MODE"):
+        app = FastAPI(docs_url=None)
+    else:
+        app = FastAPI()
     # 添加中间件，处理跨域问题
     app.add_middleware(
         CORSMiddleware,
