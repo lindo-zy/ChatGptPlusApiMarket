@@ -122,7 +122,6 @@ async def request(x_token: str = Header(...)):
     :param x_token:
     :return:
     """
-    # return {'message': f'request接口异常!', 'status': 'error'}
     try:
         info = JwtTool.check_access_token(x_token)
         if info:
@@ -135,9 +134,10 @@ async def request(x_token: str = Header(...)):
                     remaining_count = rows[0].remaining_count
                     if remaining_count > 0:
                         return {'message': 'request处理成功！', 'status': 'success'}
-        return {'message': 'request接口异常！', 'status': 'error'}
+        return {'message': f'添加助手微信：{settings.WEIXIN_CODE},获取更多次数！', 'status': 'error'}
     except Exception as e:
-        return {'message': f'request接口异常！{e}', 'status': 'error'}
+        logger.error(e)
+        return {'message': f'添加助手微信：{settings.WEIXIN_CODE},获取更多次数！', 'status': 'error'}
 
 
 @app.post('/charging')
