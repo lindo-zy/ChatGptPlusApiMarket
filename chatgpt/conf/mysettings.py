@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from pydantic import BaseSettings
 
 # 加载.env文件中的环境变量
-if not load_dotenv('dev.env'):
+if not load_dotenv('.dev.env'):
     load_dotenv('.env')
 
 
