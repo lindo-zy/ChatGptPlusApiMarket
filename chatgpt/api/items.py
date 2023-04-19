@@ -137,7 +137,7 @@ async def request(x_token: str = Header(...)):
         return {'message': f'添加助手微信：{settings.WEIXIN_CODE},获取更多次数！', 'status': 'error'}
     except Exception as e:
         logger.error(e)
-        return {'message': f'添加助手微信：{settings.WEIXIN_CODE},获取更多次数！', 'status': 'error'}
+    return {'message': f'添加助手微信：{settings.WEIXIN_CODE},获取更多次数！', 'status': 'error'}
 
 
 @app.post('/charging')
