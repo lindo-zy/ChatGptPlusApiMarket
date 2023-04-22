@@ -3,7 +3,6 @@
 import asyncio
 import datetime
 import os
-import random
 import uuid
 
 import openai
@@ -20,6 +19,7 @@ from chatgpt.schemas.items import VerifySchema
 from chatgpt.schemas.users import GenKeySchema, NodeToken
 from chatgpt.util import num_tokens_from_messages, get_proxies
 from chatgpt.utils.jwt_tool import JwtTool
+from chatgpt.utils.secret_utils import SecretUtils
 
 app = APIRouter()
 
@@ -134,10 +134,10 @@ async def request(x_token: str = Header(...)):
                     remaining_count = rows[0].remaining_count
                     if remaining_count > 0:
                         return {'message': 'request处理成功！', 'status': 'success'}
-        return {'message': f'添加助手微信：{settings.WEIXIN_CODE},获取更多次数！', 'status': 'error'}
+        return {'message': f'request接口异常！', 'status': 'error'}
     except Exception as e:
         logger.error(e)
-    return {'message': f'添加助手微信：{settings.WEIXIN_CODE},获取更多次数！', 'status': 'error'}
+    return {'message': f'request接口异常！', 'status': 'error'}
 
 
 @app.post('/charging')
@@ -194,11 +194,14 @@ async def verify(item: VerifySchema):
             group_key = rows[0].group_key
             # 3类key,星球的key
             vip_key = rows[0].vip_key
+            # 管理员秘钥
+            # admin_key = rows[0].admin_key
             if secret_key in [normal_key, str(normal_key), group_key, str(group_key), vip_key, str(vip_key)]:
                 num_map = {
                     str(normal_key): settings.NORMAL_NUM,
                     str(group_key): settings.GROUP_NUM,
                     str(vip_key): settings.VIP_NUM,
+                    # str(admin_key): 9999999,
                 }
                 cur_num = num_map[secret_key]
                 username = uuid.uuid4()
@@ -224,15 +227,11 @@ async def gen_key(item: GenKeySchema):
     :param item:
     :return:
     """
-    if item.admin_token in settings.ADMIN_TOKEN_LIST:
+    if item.admin_token == settings.ADMIN_TOKEN_LIST:
         # 更新数据库中的秘钥
         with db_session as session:
             rows = session.query(SecretKey).with_for_update().limit(1).all()
-            # 随机生成6位数
-            # (100000, 466665), (466666, 833331), (833332, 999999)
-            normal_key = random.randint(100000, 466665)
-            group_key = random.randint(466666, 833331)
-            vip_key = random.randint(833332, 999999)
+            normal_key, group_key, vip_key = SecretUtils.gen_secret_key()
             for row in rows:
                 row.normal_key = normal_key
                 row.group_key = group_key

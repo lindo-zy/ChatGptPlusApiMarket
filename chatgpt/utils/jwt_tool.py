@@ -29,14 +29,9 @@ class JwtTool:
         today = datetime.today()
         # 格式化日期并输出
         cur_date = today.strftime("date:'%Y-%m-%d'")
-        if len(username) == 32:
-            expire = datetime.utcnow() + timedelta(
-                minutes=settings.NORMAL_ACCESS_TOKEN_EXPIRE_MINUTES
-            )
-        else:
-            expire = datetime.utcnow() + timedelta(
-                minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-            )
+        expire = datetime.utcnow() + timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
         to_encode = {"exp": expire, "username": username, 'num': str(num), 'date': cur_date}
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
         return encoded_jwt
@@ -58,7 +53,3 @@ class JwtTool:
         except Exception as e:
             print(e)
         return {}
-
-
-if __name__ == '__main__':
-    pass

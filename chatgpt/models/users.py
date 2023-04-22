@@ -4,7 +4,10 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
+from chatgpt.utils.secret_utils import SecretUtils
+
 Base = declarative_base()
+normal_key, group_key, vip_key = SecretUtils.gen_secret_key()
 
 
 class User(Base):
@@ -28,11 +31,13 @@ class SecretKey(Base):
     # 自增id
     key_id = Column(Integer, primary_key=True, autoincrement=True)
     # 1类key,关注公众号
-    normal_key = Column(String(255), nullable=False)
+    normal_key = Column(String(255), nullable=False, default=str(normal_key))
     # 2类key,微信群的key
-    group_key = Column(String(255), nullable=False)
+    group_key = Column(String(255), nullable=False, default=str(group_key))
     # 3类key,星球的key
-    vip_key = Column(String(255), nullable=False)
+    vip_key = Column(String(255), nullable=False, default=str(vip_key))
+    # 管理员秘钥
+    # admin_key = Column(String(255), nullable=False, default='nemo666')
 
 
 class Counter(Base):

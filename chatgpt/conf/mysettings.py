@@ -15,31 +15,32 @@ class MySettings(BaseSettings):
     ALGORITHM: str = os.getenv('ALGORITHM')
 
     # 60 minutes * 24 hours * 30 days = 30 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
+    # ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
     # 1天过期
     NORMAL_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
     # 管理员的token配置
-    ADMIN_TOKEN_LIST = os.getenv("ADMIN_TOKEN_LIST")
+    ADMIN_TOKEN_LIST: str = os.getenv("ADMIN_TOKEN_LIST")
     # 免费次数配置
     # 白嫖次数
-    NORMAL_NUM = os.getenv("NORMAL_NUM")
+    NORMAL_NUM: int = os.getenv("NORMAL_NUM")
     # 加群增加的次数
-    GROUP_NUM = os.getenv("GROUP_NUM")
+    GROUP_NUM: int = os.getenv("GROUP_NUM")
     # 加入星球的次数
-    VIP_NUM = os.getenv("VIP_NUM")
+    VIP_NUM: int = os.getenv("VIP_NUM")
 
     # 数据库配置
-    DATABASE = os.getenv("DATABASE")
-    DB_HOST = os.getenv("DB_HOST")
-    DB_USERNAME = os.getenv("DB_USERNAME")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    DATABASE: str = os.getenv("DATABASE")
+    DB_HOST: str = os.getenv("DB_HOST")
+    DB_USERNAME: str = os.getenv("DB_USERNAME")
+    DB_PASSWORD: str = os.getenv("DB_PASSWORD")
 
     # 后台每日最大访问次数
-    MAX_REQUEST = os.getenv("MAX_REQUEST")
+    MAX_REQUEST: int = os.getenv("MAX_REQUEST")
 
     # 微信号
-    WEIXIN_CODE = os.getenv('WEIXIN_CODE')
+    WEIXIN_CODE: str = os.getenv('WEIXIN_CODE')
 
 
 settings = MySettings()
